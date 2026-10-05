@@ -1,1 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RRB JAA 60-Day Selection Tracker</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#17212b;--muted:#667482;--primary:#245b8f;--primary2:#17324d;--ok:#1d8a5a;--line:#dbe3ea;--warn:#c57b16;--danger:#c94a4a}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#17324d,#245b8f);color:white;padding:28px 20px 24px;position:sticky;top:0;z-index:5;box-shadow:0 4px 18px #0002}
+.wrap{max-width:1200px;margin:auto}.top{display:flex;justify-content:space-between;gap:18px;align-items:center}.brand h1{margin:0;font-size:28px}.brand p{margin:6px 0 0;opacity:.86}
+button,.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;background:white;color:var(--primary2)}
+main{padding:22px 16px 50px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;box-shadow:0 2px 8px #17324d0a}.stat b{font-size:25px;display:block}.muted{color:var(--muted);font-size:13px}
+.progress{height:10px;background:#e7edf2;border-radius:99px;overflow:hidden;margin-top:10px}.bar{height:100%;background:var(--primary);width:0%;transition:.25s}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.controls input,.controls select,.score input,.notes textarea{padding:10px;border:1px solid var(--line);border-radius:9px;background:white}
+.controls input{flex:1;min-width:220px}.daylist{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.day{position:relative}.day.done{border-color:#8bd0ae}.day h3{margin:0 0 6px}.tag{font-size:11px;padding:4px 7px;border-radius:99px;background:var(--light,#eaf2f8);color:var(--primary);display:inline-block}
+.tasks{margin:12px 0 0;padding:0;list-style:none}.tasks li{padding:7px 0;border-top:1px solid #eef2f5;font-size:13px;display:flex;gap:8px}.tasks input{margin-top:2px}
+.target{font-weight:800;color:var(--primary);margin-top:10px}.score{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}.score label{font-size:11px;color:var(--muted)}.score input{width:100%;margin-top:3px}
+.notes textarea{width:100%;min-height:65px;margin-top:10px;resize:vertical}.actions{display:flex;gap:7px;margin-top:10px}.actions button{font-size:12px;padding:8px 10px;background:#edf4fa}
+.section{margin-top:22px}.section h2{color:var(--primary2)}.review{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.week{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.smallbar{height:8px;background:#e7edf2;border-radius:9px;overflow:hidden}.smallbar span{display:block;height:100%;background:var(--ok)}
+footer{text-align:center;color:var(--muted);padding:30px;font-size:12px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.daylist{grid-template-columns:1fr 1fr}.week{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid,.daylist,.review,.week{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.brand h1{font-size:23px}}
+@media print{header{position:static}.controls,.actions,button{display:none!important}body{background:white}.daylist{grid-template-columns:1fr 1fr}.card,.day{box-shadow:none;break-inside:avoid}.daylist{gap:8px}.day{font-size:11px}main{padding:10px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div class="brand"><h1>RRB JAA • 60-Day Selection Tracker</h1><p>Study → PYQs → mocks → typing → error correction → revision</p></div><button onclick="window.print()">🖨 Print</button></div></header>
+<main class="wrap">
+<section class="grid">
+<div class="card stat"><span class="muted">Days completed</span><b id="done">0 / 60</b><div class="progress"><div id="pbar" class="bar"></div></div></div>
+<div class="card stat"><span class="muted">Questions logged</span><b id="qtotal">0</b><span class="muted">Target: 5,000+</span></div>
+<div class="card stat"><span class="muted">Average accuracy</span><b id="acc">—</b><span class="muted">Final target: 90%+</span></div>
+<div class="card stat"><span class="muted">Best typing</span><b id="wpm">0 WPM</b><span class="muted">Target: 38–40+</span></div>
+</section>
 
+<section class="section">
+<h2>📅 Day-by-day tracker</h2>
+<div class="controls">
+<input id="search" placeholder="Search day, topic, mock, subject…">
+<select id="phase"><option value="">All phases</option></select>
+<select id="status"><option value="">All status</option><option value="open">Incomplete</option><option value="done">Completed</option></select>
+</div>
+<div id="days" class="daylist"></div>
+</section>
+
+<section class="section">
+<h2>📊 Weekly progress</h2>
+<div id="weeks" class="week"></div>
+</section>
+
+<section class="section review">
+<div class="card"><h2>🎯 Non-negotiables</h2><ul>
+<li>Complete the assigned daily questions.</li><li>Type every day.</li><li>Analyse every mock.</li><li>Record wrong/guessed questions.</li><li>Re-test repeated mistakes.</li><li>Do not confuse “hours studied” with “progress earned”.</li>
+</ul></div>
+<div class="card"><h2>⚠️ Important</h2><p class="muted">This tracker is a preparation system, not a guarantee of selection. Use the latest official RRB CEN/e-call letter for the exact exam rules, dates and qualifying requirements.</p><button onclick="resetAll()" style="background:#fff0f0;color:#a33">Reset all saved progress</button></div>
+</section>
+</main>
+<footer>RRB JAA 60-Day Tracker • Your data is saved locally in this browser using localStorage.</footer>
+
+<script>
+const DAYS=[{"day": 1, "phase": "Baseline", "maths": "Number system + simplification — 40Q", "reasoning": "Analogy + classification — 40Q", "ga": "Constitution — 30Q", "test": "50 mixed PYQ", "typing": "Baseline typing", "revision": "Error Book + baseline score", "target": "65%"}, {"day": 2, "phase": "Foundation", "maths": "Fractions + decimals — 50Q", "reasoning": "Number/alphabet series — 50Q", "ga": "Fundamental Rights/Duties — 30Q", "test": "50 PYQ", "typing": "20 WPM", "revision": "Day 1 errors", "target": "70%"}, {"day": 3, "phase": "Foundation", "maths": "LCM/HCF — 50Q", "reasoning": "Coding-decoding — 50Q", "ga": "Physics basics — 30Q", "test": "50 PYQ", "typing": "20 WPM", "revision": "Days 1–2 errors", "target": "70%"}, {"day": 4, "phase": "Foundation", "maths": "Ratio/proportion — 60Q", "reasoning": "Math operations — 50Q", "ga": "President/PM/Parliament — 30Q", "test": "50 PYQ", "typing": "21 WPM", "revision": "Formula recap", "target": "72%"}, {"day": 5, "phase": "Foundation", "maths": "Percentage — 60Q", "reasoning": "Blood relations — 50Q", "ga": "Chemistry basics — 30Q", "test": "50 PYQ", "typing": "21 WPM", "revision": "Error Book", "target": "72%"}, {"day": 6, "phase": "Foundation", "maths": "Average — 60Q", "reasoning": "Direction/distance — 50Q", "ga": "Indian geography — 30Q", "test": "60 PYQ", "typing": "22 WPM", "revision": "Days 1–5 revision", "target": "73%"}, {"day": 7, "phase": "Weekly Test", "maths": "Maths 30Q + Reasoning 30Q", "reasoning": "Sectional test", "ga": "GA/GS 40Q", "test": "100Q timed + analysis", "typing": "10 min", "revision": "Top 10 errors", "target": "75%"}, {"day": 8, "phase": "Core", "maths": "Profit/loss — 60Q", "reasoning": "Syllogism — 50Q", "ga": "Biology basics — 30Q", "test": "60 PYQ", "typing": "22 WPM", "revision": "Error Book", "target": "75%"}, {"day": 9, "phase": "Core", "maths": "Discount — 50Q", "reasoning": "Venn diagrams — 50Q", "ga": "Modern history — 40Q", "test": "60 PYQ", "typing": "23 WPM", "revision": "Days 1–8", "target": "75%"}, {"day": 10, "phase": "Core", "maths": "SI — 60Q", "reasoning": "Statement/conclusion — 50Q", "ga": "Human body — 30Q", "test": "60 PYQ", "typing": "23 WPM", "revision": "Revision cycle", "target": "76%"}, {"day": 11, "phase": "Core", "maths": "CI — 60Q", "reasoning": "Data sufficiency — 50Q", "ga": "Ancient/Medieval history — 40Q", "test": "60 PYQ", "typing": "24 WPM", "revision": "Error Book", "target": "76%"}, {"day": 12, "phase": "Core", "maths": "Partnership — 60Q", "reasoning": "Puzzle basics — 50Q", "ga": "Physics — 40Q", "test": "60 PYQ", "typing": "24 WPM", "revision": "Formula recap", "target": "77%"}, {"day": 13, "phase": "Core", "maths": "Time & work — 70Q", "reasoning": "Seating — 50Q", "ga": "Economy basics — 40Q", "test": "60 PYQ", "typing": "25 WPM", "revision": "Weak areas", "target": "77%"}, {"day": 14, "phase": "MOCK 1", "maths": "Full CBT-style mock", "reasoning": "Full analysis", "ga": "Re-solve wrong/guessed Q", "test": "Record score/attempts", "typing": "10 min", "revision": "Update Error Book", "target": "78%"}, {"day": 15, "phase": "Core", "maths": "Pipes/cisterns — 60Q", "reasoning": "Advanced puzzles — 50Q", "ga": "Chemistry — 40Q", "test": "60 PYQ", "typing": "25 WPM", "revision": "Error Book", "target": "78%"}, {"day": 16, "phase": "Core", "maths": "Speed/time/distance — 70Q", "reasoning": "Maps/directions — 50Q", "ga": "World geography — 40Q", "test": "60 PYQ", "typing": "26 WPM", "revision": "Revision", "target": "79%"}, {"day": 17, "phase": "Core", "maths": "Trains — 50Q", "reasoning": "Mixed reasoning — 60Q", "ga": "Biology — 40Q", "test": "60 PYQ", "typing": "26 WPM", "revision": "Error Book", "target": "79%"}, {"day": 18, "phase": "Core", "maths": "Algebra — 70Q", "reasoning": "Series — 60Q", "ga": "Polity — 40Q", "test": "60 PYQ", "typing": "27 WPM", "revision": "Formula recap", "target": "80%"}, {"day": 19, "phase": "Core", "maths": "Geometry — 70Q", "reasoning": "Coding + analogy — 60Q", "ga": "General Science — 40Q", "test": "60 PYQ", "typing": "27 WPM", "revision": "Revision", "target": "80%"}, {"day": 20, "phase": "Core", "maths": "Mensuration — 70Q", "reasoning": "Mixed reasoning — 60Q", "ga": "Current affairs revision", "test": "80 PYQ", "typing": "28 WPM", "revision": "Cumulative revision", "target": "80%"}, {"day": 21, "phase": "MOCK 2", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve wrong/guessed Q", "test": "Record trend", "typing": "10 min", "revision": "Top 20 errors", "target": "80%"}, {"day": 22, "phase": "PYQ", "maths": "Arithmetic — 100Q", "reasoning": "Reasoning — 75Q", "ga": "GA/GS — 50Q", "test": "Reattempt marked Q", "typing": "29 WPM", "revision": "Formula revision", "target": "81%"}, {"day": 23, "phase": "PYQ", "maths": "%/ratio/average — 100Q", "reasoning": "Coding/series/syllogism — 75Q", "ga": "Science — 50Q", "test": "Mixed PYQ", "typing": "29 WPM", "revision": "Error Book", "target": "81%"}, {"day": 24, "phase": "PYQ", "maths": "Profit/loss/SI/CI — 100Q", "reasoning": "Puzzle/seating — 75Q", "ga": "Polity — 50Q", "test": "Mixed PYQ", "typing": "30 WPM", "revision": "Revision", "target": "82%"}, {"day": 25, "phase": "PYQ", "maths": "Work/distance — 100Q", "reasoning": "Mixed reasoning — 75Q", "ga": "Geography — 50Q", "test": "Mixed PYQ", "typing": "30 WPM", "revision": "Weak repair", "target": "82%"}, {"day": 26, "phase": "PYQ", "maths": "Algebra/geometry/mensuration — 100Q", "reasoning": "Reasoning mixed — 75Q", "ga": "History — 50Q", "test": "Mixed PYQ", "typing": "31 WPM", "revision": "Formula sheet", "target": "82%"}, {"day": 27, "phase": "PYQ", "maths": "DI/statistics — 75Q", "reasoning": "Reasoning mixed — 75Q", "ga": "Economy — 50Q", "test": "Mixed PYQ", "typing": "31 WPM", "revision": "Current affairs", "target": "82%"}, {"day": 28, "phase": "MOCK 3", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve wrong/guessed Q", "test": "Record trend", "typing": "10 min", "revision": "Top 20 errors", "target": "82%"}, {"day": 29, "phase": "Repair", "maths": "100 previously wrong Q", "reasoning": "Weak reasoning — 50Q", "ga": "Weak GA/GS — 50Q", "test": "Timed mixed set", "typing": "32 WPM", "revision": "Repair repeats", "target": "83%"}, {"day": 30, "phase": "Audit", "maths": "100 mixed Q", "reasoning": "100 mixed Q", "ga": "100 mixed Q", "test": "Audit first 3 mocks", "typing": "32 WPM", "revision": "5,000Q progress check", "target": "83%"}, {"day": 31, "phase": "MOCK 4", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Error classification", "test": "Record trend", "typing": "32 WPM", "revision": "Repair top 10", "target": "83%"}, {"day": 32, "phase": "Competitive", "maths": "Weak Maths — 120Q", "reasoning": "Weak Reasoning — 80Q", "ga": "GA/GS — 60Q", "test": "Timed mixed", "typing": "33 WPM", "revision": "Error Book", "target": "84%"}, {"day": 33, "phase": "Competitive", "maths": "Arithmetic mixed — 120Q", "reasoning": "Reasoning mixed — 80Q", "ga": "Current affairs — 60Q", "test": "Timed mixed", "typing": "33 WPM", "revision": "Revision", "target": "84%"}, {"day": 34, "phase": "Competitive", "maths": "Advanced Maths — 120Q", "reasoning": "Puzzle/seating — 80Q", "ga": "Science — 60Q", "test": "Timed mixed", "typing": "34 WPM", "revision": "Error Book", "target": "84%"}, {"day": 35, "phase": "MOCK 5", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve errors", "test": "Record trend", "typing": "34 WPM", "revision": "Top 20 errors", "target": "84%"}, {"day": 36, "phase": "PYQ Marathon", "maths": "Maths — 120Q", "reasoning": "Reasoning — 100Q", "ga": "GA/GS — 80Q", "test": "Timed mixed", "typing": "34 WPM", "revision": "Revision", "target": "85%"}, {"day": 37, "phase": "Error Book", "maths": "Math repair — 100Q", "reasoning": "Reasoning repair — 50Q", "ga": "GA/GS repair — 50Q", "test": "Re-test repeats", "typing": "35 WPM", "revision": "Clear repeated errors", "target": "85%"}, {"day": 38, "phase": "Speed", "maths": "Mixed — 200Q", "reasoning": "Timed section", "ga": "Timed GA/GS", "test": "Review time/accuracy", "typing": "35 WPM", "revision": "Time strategy", "target": "85%"}, {"day": 39, "phase": "Weakness", "maths": "Weakest subject — 150Q", "reasoning": "Second weakness — 75Q", "ga": "GA/GS — 50Q", "test": "Timed mixed", "typing": "35 WPM", "revision": "Repair plan", "target": "85%"}, {"day": 40, "phase": "MOCK 6", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve errors", "test": "Record trend", "typing": "35 WPM", "revision": "Top 10 leaks", "target": "85%"}, {"day": 41, "phase": "Selection Mode", "maths": "Maths PYQ — 100Q", "reasoning": "Reasoning PYQ — 100Q", "ga": "GA/GS — 75Q", "test": "Error Book reattempt", "typing": "35 WPM", "revision": "Cumulative revision", "target": "86%"}, {"day": 42, "phase": "MOCK 7", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve errors", "test": "Record trend", "typing": "36 WPM", "revision": "Weakness repair", "target": "86%"}, {"day": 43, "phase": "Revision", "maths": "Formula revision + 100Q", "reasoning": "Quick revision", "ga": "Quick GA/GS", "test": "Timed Maths", "typing": "36 WPM", "revision": "Formula recall", "target": "87%"}, {"day": 44, "phase": "Revision", "maths": "Quick revision", "reasoning": "Patterns + 100Q", "ga": "Quick GA/GS", "test": "Timed Reasoning", "typing": "36 WPM", "revision": "Pattern recall", "target": "87%"}, {"day": 45, "phase": "Revision", "maths": "Quick revision", "reasoning": "Quick revision", "ga": "GA/GS — 150Q", "test": "Timed GA/GS", "typing": "36 WPM", "revision": "Current affairs", "target": "87%"}, {"day": 46, "phase": "MOCK 8", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve errors", "test": "Record trend", "typing": "37 WPM", "revision": "Top mistakes", "target": "87%"}, {"day": 47, "phase": "Repair", "maths": "Mock errors — 100Q", "reasoning": "Mock errors — 50Q", "ga": "Mock errors — 50Q", "test": "Timed repair", "typing": "37 WPM", "revision": "Eliminate repeats", "target": "88%"}, {"day": 48, "phase": "Speed", "maths": "Maths speed test", "reasoning": "Reasoning speed test", "ga": "GA/GS speed test", "test": "200 total Q", "typing": "37 WPM", "revision": "Time allocation", "target": "88%"}, {"day": 49, "phase": "MOCK 9", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Re-solve errors", "test": "Record trend", "typing": "37 WPM", "revision": "Final weakness list", "target": "88%"}, {"day": 50, "phase": "Audit", "maths": "100 Maths Q", "reasoning": "100 Reasoning Q", "ga": "100 GA/GS Q", "test": "Audit progress", "typing": "37 WPM", "revision": "5,000+ Q target", "target": "88%"}, {"day": 51, "phase": "MOCK 10", "maths": "Full mock", "reasoning": "Deep analysis", "ga": "Wrong/guess classification", "test": "Final error list", "typing": "37 WPM", "revision": "Repair leaks", "target": "88%"}, {"day": 52, "phase": "Final Maths", "maths": "All formulas + 100Q", "reasoning": "Light revision", "ga": "Light revision", "test": "Timed Maths", "typing": "38 WPM", "revision": "Formula sheet", "target": "89%"}, {"day": 53, "phase": "Final Reasoning", "maths": "Light revision", "reasoning": "All patterns + 120Q", "ga": "Light revision", "test": "Timed Reasoning", "typing": "38 WPM", "revision": "Pattern sheet", "target": "89%"}, {"day": 54, "phase": "Final GA/GS", "maths": "Light revision", "reasoning": "Light revision", "ga": "GA/GS — 200Q", "test": "Timed GA/GS", "typing": "38 WPM", "revision": "Current affairs", "target": "90%"}, {"day": 55, "phase": "MOCK 11", "maths": "Full exam simulation", "reasoning": "Deep analysis", "ga": "Re-solve errors", "test": "Final strategy", "typing": "38–40 WPM", "revision": "No new material", "target": "90%"}, {"day": 56, "phase": "ERROR BOOK", "maths": "150+ correction Q", "reasoning": "Repeated Maths errors", "ga": "Repeated Reasoning/GA/GS", "test": "Re-test all", "typing": "38–40 WPM", "revision": "Clear repeats", "target": "90%"}, {"day": 57, "phase": "MOCK 12", "maths": "Final full mock", "reasoning": "Deep analysis", "ga": "Critical errors", "test": "Lock attempt strategy", "typing": "38–40 WPM", "revision": "Final error list", "target": "90%+"}, {"day": 58, "phase": "Final Revision", "maths": "Formula + 50Q", "reasoning": "Patterns + 50Q", "ga": "GA/GS + 100Q", "test": "Light timed set", "typing": "10 min", "revision": "No new topics", "target": "90%+"}, {"day": 59, "phase": "Pre-exam", "maths": "30 Maths Q", "reasoning": "30 Reasoning Q", "ga": "50 GA/GS Q", "test": "Final Error Book + documents", "typing": "10 min", "revision": "Sleep 7–8h", "target": "90%+"}, {"day": 60, "phase": "Execution", "maths": "10 easy Maths Q", "reasoning": "10 Reasoning Q", "ga": "20 GA facts", "test": "No heavy test", "typing": "Warm-up only", "revision": "Calm execution", "target": "90%+"}];
+const KEY="rrbJaa60TrackerV1";
+let data=JSON.parse(localStorage.getItem(KEY)||"{}");
+function get(i){return data[i]||{checks:[],hours:"",q:"",correct:"",wpm:"",mock:"",notes:""}}
+function save(i,obj){data[i]=obj;localStorage.setItem(KEY,JSON.stringify(data));renderStats();renderWeeks()}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function render(){
+ const phases=[...new Set(DAYS.map(d=>d.phase))]; phase.innerHTML='<option value="">All phases</option>'+phases.map(x=>`<option>${esc(x)}</option>`).join("");
+ drawDays();renderStats();renderWeeks();
+}
+function drawDays(){
+ const q=(search.value||"").toLowerCase(), ph=phase.value, st=status.value;
+ days.innerHTML=DAYS.filter(d=>{
+   const x=get(d.day), done=(x.checks||[]).filter(Boolean).length>=7;
+   const hay=JSON.stringify(d).toLowerCase();
+   return (!q||hay.includes(q))&&(!ph||d.phase===ph)&&(!st||(st==="done"?done:!done));
+ }).map(d=>{
+   const x=get(d.day), checks=x.checks||[], done=checks.filter(Boolean).length>=7;
+   const tasks=[["Maths",d.maths],["Reasoning",d.reasoning],["GA / GS",d.ga],["PYQ / Test",d.test],["Typing",d.typing],["Revision",d.revision],["Minimum",d.target]];
+   return `<article class="card day ${done?"done":""}">
+   <h3>Day ${d.day} <span class="tag">${esc(d.phase)}</span></h3>
+   <div class="muted">Minimum accuracy target: <b>${esc(d.target)}</b></div>
+   <ul class="tasks">${tasks.map((t,j)=>`<li><input type="checkbox" ${checks[j]?"checked":""} onchange="toggle(${d.day},${j},this.checked)"> <span><b>${t[0]}:</b> ${esc(t[1])}</span></li>`).join("")}</ul>
+   <div class="score">
+    <label>Hours<input value="${esc(x.hours)}" onchange="field(${d.day},'hours',this.value)" placeholder="5"></label>
+    <label>Questions<input type="number" value="${esc(x.q)}" onchange="field(${d.day},'q',this.value)" placeholder="200"></label>
+    <label>Correct<input type="number" value="${esc(x.correct)}" onchange="field(${d.day},'correct',this.value)" placeholder="180"></label>
+    <label>Typing WPM<input type="number" value="${esc(x.wpm)}" onchange="field(${d.day},'wpm',this.value)" placeholder="38"></label>
+    <label>Mock score<input value="${esc(x.mock)}" onchange="field(${d.day},'mock',this.value)" placeholder="90%"></label>
+   </div>
+   <div class="notes"><textarea onchange="field(${d.day},'notes',this.value)" placeholder="Biggest mistake + tomorrow's fix…">${esc(x.notes)}</textarea></div>
+   </article>`
+ }).join("");
+}
+function toggle(i,j,v){let x=get(i);x.checks=x.checks||[];x.checks[j]=v;save(i,x);drawDays()}
+function field(i,k,v){let x=get(i);x[k]=v;save(i,x)}
+function renderStats(){
+ let done=0,qs=0,c=0,w=0,n=0;
+ DAYS.forEach(d=>{let x=get(d.day);if((x.checks||[]).filter(Boolean).length>=7)done++;qs+=Number(x.q)||0;if(x.correct!==""&&x.q){c+=Number(x.correct);n+=Number(x.q)}w=Math.max(w,Number(x.wpm)||0)});
+ document.getElementById("done").textContent=`${done} / 60`;document.getElementById("qtotal").textContent=qs.toLocaleString();document.getElementById("acc").textContent=n?Math.round(c/n*100)+"%":"—";document.getElementById("wpm").textContent=w+" WPM";document.getElementById("pbar").style.width=(done/60*100)+"%";
+}
+function renderWeeks(){
+ weeks.innerHTML=Array.from({length:9},(_,i)=>{
+   let a=i*7+1,b=Math.min(60,(i+1)*7),done=0,q=0;
+   for(let d=a;d<=b;d++){let x=get(d);if((x.checks||[]).filter(Boolean).length>=7)done++;q+=Number(x.q)||0}
+   return `<div class="card"><b>Week ${i+1}</b><div class="muted">Days ${a}–${b}</div><p>${done}/${b-a+1} days complete</p><div class="smallbar"><span style="width:${done/(b-a+1)*100}%"></span></div><p class="muted">${q.toLocaleString()} questions logged</p></div>`
+ }).join("");
+}
+function resetAll(){if(confirm("Delete all tracker progress from this browser?")){localStorage.removeItem(KEY);data={};render();}}
+search.oninput=drawDays;phase.onchange=drawDays;status.onchange=drawDays;render();
+</script>
+</body></html>
